@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CheckMe - Перевірка посилань та файлів</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --danger-color: #e74c3c;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        /* Header Styles */
+        header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            margin-left: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 2rem;
+            color: var(--secondary-color);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+        }
+        
+        nav ul li {
+            margin-left: 1.5rem;
+        }
+        
+        nav ul li a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            cursor: pointer;
+        }
+        
+        nav ul li a:hover {
+            color: var(--secondary-color);
+        }
+        
+        .active {
+            color: var(--secondary-color);
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 5px;
+        }
+        
+        /* Main Content Styles */
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 140px);
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .hero h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+        }
+        
+        .checker-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+        }
+        
+        .tabs {
+            display: flex;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .tab {
+            padding: 0.8rem 1.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            border-bottom: 3px solid var(--secondary-color);
+            color: var(--secondary-color);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .input-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+        
+        .input-field {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+        }
+        
+        .file-placeholder {
+            display: block;
+            padding: 1rem;
+            border: 2px dashed #ddd;
+            border-radius: 5px;
+            text-align: center;
+            color: #777;
+        }
+        
+        .btn {
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            display: inline-block;
+        }
+        
+        .btn:hover {
+            background-color: #2980b9;
+        }
+        
+        .btn-block {
+            display: block;
+            width: 100%;
+        }
+        
+        .result {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .result.safe {
+            background-color: rgba(46, 204, 113, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+        
+        .result.warning {
+            background-color: rgba(243, 156, 18, 0.1);
+            border: 1px solid var(--warning-color);
+            color: var(--warning-color);
+        }
+        
+        .result.danger {
+            background-color: rgba(231, 76, 60, 0.1);
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+        
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+        
+        .feature-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            text-align: center;
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            color: var(--secondary-color);
+            margin-bottom: 1rem;
+        }
+        
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Documentation Styles */
+        .doc-section {
+            margin-bottom: 2rem;
+        }
+        
+        .doc-section h2 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+            border-bottom: 2px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+        
+        .doc-section h3 {
+            margin: 1.5rem 0 0.5rem;
+            color: var(--secondary-color);
+        }
+        
+        .doc-section p {
+            margin-bottom: 1rem;
+        }
+        
+        .doc-section ul, .doc-section ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .doc-section li {
+            margin-bottom: 0.5rem;
+        }
+        
+        .code-block {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+        
+        /* Footer Styles */
+        footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 1.5rem 0;
+            text-align: center;
+        }
+        
+        .footer-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .footer-links {
+            display: flex;
+            margin: 1rem 0;
+        }
+        
+        .footer-links a {
+            color: white;
+            margin: 0 1rem;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .footer-links a:hover {
+            color: var(--secondary-color);
+        }
+        
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+                justify-content: center;
+            }
+            
+            nav ul li {
+                margin: 0 0.5rem;
+            }
+            
+            .hero h2 {
+                font-size: 2rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .footer-links {
+                flex-direction: column;
+            }
+            
+            .footer-links a {
+                margin: 0.5rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🔍</span>
+                    <h1>CheckMe</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-page="home">Головна</a></li>
+                        <li><a href="#" class="nav-link" data-page="documentation">Документація</a></li>
+                        <li><a href="#" class="nav-link" data-page="about">Про нас</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Home Page -->
+        <section id="home" class="page active">
+            <div class="hero">
+                <h2>Безпека в один клік</h2>
+                <p>CheckMe допоможе вам перевірити посилання та файли на наявність вірусів, шкідливого ПЗ та інших загроз безкоштовно</p>
+            </div>
+            
+            <div class="checker-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="url">Перевірка посилання</div>
+                    <div class="tab" data-tab="file">Перевірка файлу</div>
+                </div>
+                
+                <div class="tab-content active" id="url-tab">
+                    <div class="input-group">
+                        <label for="url-input">Введіть URL для перевірки:</label>
+                        <input type="text" id="url-input" class="input-field" placeholder="https://example.com">
+                    </div>
+                    <button class="btn btn-block">Перевірити посилання</button>
+                </div>
+                
+                <div class="tab-content" id="file-tab">
+                    <div class="input-group">
+                        <label>Виберіть файл для перевірки:</label>
+                        <div class="file-placeholder">
+                            Функціонал перевірки файлів тимчасово недоступний
+                        </div>
+                    </div>
+                    <button class="btn btn-block">Перевірити файл</button>
+                </div>
+                
+                <div class="result safe">
+                    <h3>Безпечне посилання</h3>
+                    <p>Наш аналіз не виявив загроз у цьому посиланні. Ви можете безпечно його використовувати.</p>
+                </div>
+            </div>
+            
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Безпека</h3>
+                    <p>Перевіряйте посилання та файли перед відкриттям</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Швидкість</h3>
+                    <p>Миттєва перевірка без зайвих очікувань</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🆓</div>
+                    <h3>Безкоштовно</h3>
+                    <p>Повністю безкоштовний сервіс без прихованих платежів</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Конфіденційність</h3>
+                    <p>Ваші дані не зберігаються на наших серверах</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Documentation Page -->
+        <section id="documentation" class="page">
+            <h1>Документація</h1>
+            
+            <div class="doc-section">
+                <h2>Як користуватися CheckMe</h2>
+                
+                <h3>Перевірка посилань</h3>
+                <p>Щоб перевірити посилання на наявність загроз:</p>
+                <ol>
+                    <li>Перейдіть на вкладку "Перевірка посилання"</li>
+                    <li>Введіть URL у текстове поле</li>
+                    <li>Натисніть кнопку "Перевірити посилання"</li>
+                    <li>Очікуйте на результати аналізу</li>
+                </ol>
+                
+                <h3>Перевірка файлів</h3>
+                <p>Щоб перевірити файл на наявність вірусів:</p>
+                <ol>
+                    <li>Перейдіть на вкладку "Перевірка файлу"</li>
+                    <li>Натисніть на область для завантаження або перетягніть файл</li>
+                    <li>Оберіть файл для перевірки (максимальний розмір: 100 МБ)</li>
+                    <li>Натисніть кнопку "Перевірити файл"</li>
+                    <li>Очікуйте на результати аналізу</li>
+                </ol>
+            </div>
+            
+            <div class="doc-section">
+                <h2>Типи загроз, які ми виявляємо</h2>
+                
+                <h3>Для посилань</h3>
+                <ul>
+                    <li>Фішингові сайти</li>
+                    <li>Сайти з шкідливим ПЗ</li>
+                    <li>Підозрілі перенаправлення</li>
+                    <li>Сайти з небезпечним контентом</li>
+                    <li>Шахрайські ресурси</li>
+                </ul>
+                
+                <h3>Для файлів</h3>
+                <ul>
+                    <li>Віруси та трояни</li>
+                    <li>Шпигунське ПЗ</li>
+                    <li>Рекламне ПЗ (Adware)</li>
+                    <li>Шкідливі скрипти</li>
+                    <li>Підозрілі виконувані файли</li>
+                </ul>
+            </div>
+        </section>
+        
+        <!-- About Page -->
+        <section id="about" class="page">
+            <h1>Про нас</h1>
+            
+            <div class="doc-section">
+                <h2>Наша місія</h2>
+                <p>CheckMe - це безкоштовний сервіс, створений для забезпечення безпеки користувачів в інтернеті. Ми прагнемо зробити цифровий простір безпечнішим для всіх, надаючи зручні інструменти для перевірки посилань та файлів.</p>
+                
+                <h2>Наша команда</h2>
+                <p>Над розробкою CheckMe працює команда фахівців з кібербезпеки, які мають багаторічний досвід у виявленні та нейтралізації різноманітних загроз. Ми постійно вдосконалюємо наші алгоритми для забезпечення максимальної ефективності.</p>
+                
+                <h2>Наші принципи</h2>
+                <ul>
+                    <li><strong>Безкоштовність:</strong> Ми віримо, що безпека в інтернеті має бути доступною для всіх</li>
+                    <li><strong>Конфіденційність:</strong> Ми не збираємо та не зберігаємо особисту інформацію користувачів</li>
+                    <li><strong>Прозорість:</strong> Ми надаємо детальну інформацію про виявлені загрози</li>
+                    <li><strong>Постійне вдосконалення:</strong> Ми регулярно оновлюємо нашу базу загроз та алгоритми аналізу</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <p>&copy; 2025 CheckMe. Всі права захищені.</p>
+                <div class="footer-links">
+                    <a href="#" class="nav-link" data-page="home">Головна</a>
+                    <a href="#" class="nav-link" data-page="documentation">Документація</a>
+                    <a href="#" class="nav-link" data-page="about">Про нас</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Навігація між сторінками
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Видаляємо активний клас з усіх посилань
+                document.querySelectorAll('.nav-link').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Додаємо активний клас до поточного посилання
+                this.classList.add('active');
+                
+                // Приховуємо всі сторінки
+                document.querySelectorAll('.page').forEach(page => {
+                    page.classList.remove('active');
+                });
+                
+                // Показуємо вибрану сторінку
+                const pageId = this.getAttribute('data-page');
+                document.getElementById(pageId).classList.add('active');
+            });
+        });
+        
+        // Перемикання між вкладками перевірки
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                // Видаляємо активний клас з усіх вкладок
+                document.querySelectorAll('.tab').forEach(item => {
+                    item.classList.remove('active');
+                });
+                
+                // Додаємо активний клас до поточної вкладки
+                this.classList.add('active');
+                
+                // Приховуємо всі вмісти вкладок
+                document.querySelectorAll('.tab-content').forEach(content => {
+                    content.classList.remove('active');
+                });
+                
+                // Показуємо вибраний вміст вкладки
+                const tabId = this.getAttribute('data-tab');
+                document.getElementById(`${tabId}-tab`).classList.add('active');
+            });
+        });
+        
+        // Всі кнопки перевірки просто показують повідомлення
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function() {
+                alert('Це демонстраційна версія. Функціонал перевірки не реалізований.');
+            });
+        });
+    </script>
+</body>
+</html>
