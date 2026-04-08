@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CheckMe - Перевірка посилань та файлів</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <span class="logo-icon">🔍</span>
+                    <h1>CheckMe</h1>
+                </div>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="nav-link active" data-page="home">Головна</a></li>
+                        <li><a href="#" class="nav-link" data-page="documentation">Документація</a></li>
+                        <li><a href="#" class="nav-link" data-page="about">Про нас</a></li>
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section id="home" class="page active">
+            <div class="hero">
+                <h2>Безпека в один клік</h2>
+                <p>CheckMe допоможе вам перевірити посилання на наявність вірусів та шахрайства. Це просто і безпечно.</p>
+            </div>
+
+            <div class="checker-container">
+                <div class="tabs">
+                    <div class="tab active" data-tab="url">Перевірка посилання</div>
+                    <div class="tab" data-tab="file">Перевірка файлу</div>
+                </div>
+
+                <div class="tab-content active" id="url-tab">
+                    <div class="input-group">
+                        <label for="url-input">Вставте або напишіть посилання:</label>
+                        <input type="text" id="url-input" class="input-field" placeholder="https://example.com">
+                    </div>
+                    <button id="btn-check-url" class="btn btn-block">Перевірити посилання</button>
+                </div>
+
+                <div class="tab-content" id="file-tab">
+                    <div class="input-group">
+                        <label>Виберіть файл для перевірки:</label>
+                        <div class="file-placeholder">
+                            Функціонал перевірки файлів у розробці
+                        </div>
+                    </div>
+                    <button class="btn btn-block" disabled>Перевірити файл</button>
+                </div>
+
+                <div id="result-display" class="result">
+                    <h3 id="result-title">Заголовок</h3>
+                    <p id="result-message">Повідомлення</p>
+                </div>
+            </div>
+
+            <div class="features">
+                <div class="feature-card">
+                    <div class="feature-icon">🛡️</div>
+                    <h3>Захист</h3>
+                    <p>Ми перевіряємо сайти через найкращі антивіруси світу</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">👵</div>
+                    <h3>Для Вас</h3>
+                    <p>Прості слова та великі кнопки для зручного користування</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🆓</div>
+                    <h3>Безкоштовно</h3>
+                    <p>Вам не потрібно нічого платити за свою безпеку</p>
+                </div>
+            </div>
+        </section>
+
+        <section id="documentation" class="page">
+            <div class="container">
+                <h1>Документація</h1>
+                <p style="margin-top: 1rem;">Тут буде опис того, як працюють наші алгоритми перевірки.</p>
+            </div>
+        </section>
+
+        <section id="about" class="page">
+            <div class="container">
+                <h1>Про нас</h1>
+                <p style="margin-top: 1rem;">Ми — студенти-кібербезпечники, які хочуть зробити інтернет безпечнішим для старшого покоління.</p>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 CheckMe. Проєкт факультету кібербезпеки.</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
