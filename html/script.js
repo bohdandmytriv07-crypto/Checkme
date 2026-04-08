@@ -1,4 +1,4 @@
-// --- Навігація між сторінками ---
+
 document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', function (e) {
         e.preventDefault();
@@ -10,7 +10,6 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
 });
 
-// --- Перемикання вкладок ---
 document.querySelectorAll('.tab').forEach(tab => {
     tab.addEventListener('click', function () {
         document.querySelectorAll('.tab').forEach(item => item.classList.remove('active'));
@@ -23,7 +22,7 @@ document.querySelectorAll('.tab').forEach(tab => {
     });
 });
 
-// --- ЛОГІКА ВЗАЄМОДІЇ З БЕКЕНДОМ ---
+
 const checkBtn = document.getElementById('btn-check-url');
 const urlInput = document.getElementById('url-input');
 const resultDisplay = document.getElementById('result-display');
@@ -38,13 +37,13 @@ checkBtn.addEventListener('click', async function () {
         return;
     }
 
-    // 1. Стан завантаження
+
     checkBtn.disabled = true;
     checkBtn.innerText = '⌛ Перевіряємо... зачекайте';
     resultDisplay.style.display = 'none';
 
     try {
-        // 2. Запит до твого Python сервера
+    
         const response = await fetch('http://localhost:8080/check-url', {
             method: 'POST',
             headers: {
@@ -59,7 +58,7 @@ checkBtn.addEventListener('click', async function () {
 
         const data = await response.json();
 
-        // 3. Відображення результату (safe, warning або danger)
+  
         resultDisplay.className = `result ${data.status}`;
         resultTitle.innerText = data.title;
         resultMessage.innerText = data.message;
@@ -76,8 +75,8 @@ checkBtn.addEventListener('click', async function () {
 });
 urlInput.addEventListener('keydown', function (e) {
     if (e.key === 'Enter') {
-        e.preventDefault(); // щоб сторінка не перезавантажилась
-        checkBtn.click();    // імітуємо натискання кнопки
+        e.preventDefault();
+        checkBtn.click();   
     }
 });
 
