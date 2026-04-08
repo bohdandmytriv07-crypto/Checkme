@@ -60,3 +60,8 @@ def save_or_update_cache(url, result):
             ''', (result["status"], result["title"], result["message"], 
                   datetime.now().strftime('%Y-%m-%d %H:%M:%S'), new_count, url))
         conn.commit()
+
+
+
+
+
