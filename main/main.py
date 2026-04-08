@@ -40,7 +40,7 @@ URL_PATTERN = re.compile(
     r'(\#[-a-z\d_]*)?$', re.IGNORECASE)
 
 def translate_result(malicious_count):
-    """Логіка адаптації результатів для літніх людей"""
+  
     if malicious_count == 0:
         return {
             "status": "safe",
