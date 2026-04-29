@@ -63,6 +63,7 @@ checkBtn.addEventListener('click', async function () {
         resultTitle.innerText = data.title;
         resultMessage.innerText = data.message;
         resultDisplay.style.display = 'block';
+        resultDisplay.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     } catch (error) {
         console.error('Error:', error);
@@ -101,4 +102,22 @@ checkBtn.addEventListener('click', async function () {
     }
 
 
+});
+const clearBtn = document.getElementById('btn-clear-url');
+
+
+urlInput.addEventListener('input', function () {
+    if (this.value.length > 0) {
+        clearBtn.style.display = 'flex';
+    } else {
+        clearBtn.style.display = 'none';
+    }
+});
+
+
+clearBtn.addEventListener('click', function () {
+    urlInput.value = ''; 
+    this.style.display = 'none'; 
+    resultDisplay.style.display = 'none'; 
+    urlInput.focus(); 
 });
