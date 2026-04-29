@@ -1,9 +1,8 @@
 {
   "ExpandedNodes": [
     "",
-    "\\html",
-    "\\main"
+    "\\static"
   ],
-  "SelectedNode": "\\main\\main.py",
+  "SelectedNode": "\\main.py",
   "PreviewInSolutionExplorer": false
 }

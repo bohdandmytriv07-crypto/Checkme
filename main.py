@@ -7,20 +7,17 @@ from pathlib import Path
 from difflib import SequenceMatcher
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles 
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import database
-
 
 env_path = Path(__file__).parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
 app = FastAPI()
 
-
 database.init_db()
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -106,8 +103,6 @@ def translate_result(malicious_count, analysis_results, is_https, suspicious_bra
             "message": f"УВАГА: {reason.upper()}! Це шахраї. Терміново закрийте сторінку."
         }
 
-
-
 @app.get("/history")
 async def get_history():
     return database.get_recent_history(10)
@@ -146,28 +141,49 @@ async def check_url(request_data: UrlCheckRequest, request: Request):
     url_id = base64.urlsafe_b64encode(full_url.encode()).decode().strip("=")
     headers = {"x-apikey": VT_API_KEY, "accept": "application/json"}
 
-    async with httpx.AsyncClient(verify=False) as client:
+    async with httpx.AsyncClient(verify=False, timeout=15.0) as client:
         try:
             response = await client.get(f"https://www.virustotal.com/api/v3/urls/{url_id}", headers=headers)
+            
             if response.status_code == 200:
                 attr = response.json()['data']['attributes']
                 res = translate_result(attr['last_analysis_stats']['malicious'], attr['last_analysis_results'], is_https, suspicious_brand)
                 database.save_or_update_cache(full_url, res)
                 return res
+            
             elif response.status_code == 404:
                 if suspicious_brand:
                     return translate_result(0, {}, is_https, suspicious_brand)
-                return {"status": "warning", "title": "Аналіз...", "message": "Сайт ще не перевірявся. Зачекайте хвилину."}
+                
+                await client.post("https://www.virustotal.com/api/v3/urls", headers=headers, data={"url": full_url})
+                return {
+                    "status": "warning", 
+                    "title": "Почато аналіз", 
+                    "message": "Сайту немає в базі. Ми відправили його на перевірку. Зачекайте 1 хвилину і натисніть кнопку знову."
+                }
+            
+            elif response.status_code == 429:
+                return {
+                    "status": "warning", 
+                    "title": "Забагато запитів", 
+                    "message": "Безкоштовний ліміт вичерпано. Спробуйте через хвилину."
+                }
+            
             else:
                 raise HTTPException(status_code=response.status_code, detail="VT Error")
+        
+        except httpx.TimeoutException:
+            return {
+                "status": "warning", 
+                "title": "Час вичерпано", 
+                "message": "Сервер перевірки не відповів вчасно. Спробуйте ще раз."
+            }
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
-!
 app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
-  
     port = int(os.environ.get("PORT", 8080))
     uvicorn.run(app, host="0.0.0.0", port=port)
