@@ -7,15 +7,20 @@ from pathlib import Path
 from difflib import SequenceMatcher
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles 
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import database
+
 
 env_path = Path(__file__).parent / ".env"
 load_dotenv(dotenv_path=env_path)
 
 app = FastAPI()
+
+
 database.init_db()
+
 
 app.add_middleware(
     CORSMiddleware,
@@ -101,6 +106,12 @@ def translate_result(malicious_count, analysis_results, is_https, suspicious_bra
             "message": f"УВАГА: {reason.upper()}! Це шахраї. Терміново закрийте сторінку."
         }
 
+
+
+@app.get("/history")
+async def get_history():
+    return database.get_recent_history(10)
+
 @app.post("/check-url")
 async def check_url(request_data: UrlCheckRequest, request: Request):
     client_ip = request.client.host
@@ -126,7 +137,6 @@ async def check_url(request_data: UrlCheckRequest, request: Request):
     domain = full_url.replace("https://", "").replace("http://", "").split('/')[0].replace("www.", "")
     
     suspicious_brand = check_typosquatting(domain)
-    
     is_https = full_url.startswith('https://')
     cached = database.get_cached_info(full_url)
     
@@ -153,6 +163,11 @@ async def check_url(request_data: UrlCheckRequest, request: Request):
         except Exception as e:
             raise HTTPException(status_code=500, detail=str(e))
 
+!
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8080)
+  
+    port = int(os.environ.get("PORT", 8080))
+    uvicorn.run(app, host="0.0.0.0", port=port)
